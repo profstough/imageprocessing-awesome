@@ -41,7 +41,7 @@ def make_random_basis(size=4):
     BP = np.random.rand(size,size)
     BN = orth(BP)
     if (BN.shape[1] != size):
-        return makeRandomBasis(size)
+        return make_random_basis(size)
     return BN
 
 """

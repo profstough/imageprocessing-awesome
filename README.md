@@ -7,15 +7,29 @@ Imaging is everywhere! In this text, we will cover broadly the acquisition, proc
 With the advent of IDE-integrated LLM copilots, any of the integrated activities or playpen notebooks are trivial to complete. That is, your completion of them reflect almost nothing about *your* understanding of the material. If you're in class using this textbook resource, you can be expected to have to explain your work in non-augmented coding interviews throughout the course, which will comprise much of your grade. **These integrated activities are to help guide your learning, not add to your instructor's menial labor.**
 
 ### Compute Environment 
-This text is tested on several platforms, but principally [Visual Studio Code](https://code.visualstudio.com/download) linked to a locally-run conda environment for package management. 
+This text is tested on several platforms, but principally [Visual Studio Code](https://code.visualstudio.com/download) linked to a locally-run Python virtual environment managed by [uv](https://docs.astral.sh/uv/).
 - [Please create a private fork of this project](private_fork_instructions.md), rather than publicly hosting your modified notebooks (with all of their solved activities).
 - Install a local virtual environment supporting this textbook
-  1. [Get Anaconda](https://docs.anaconda.com/anaconda/)
-  1. [Set up a conda env](https://medium.com/swlh/setting-up-a-conda-environment-in-less-than-5-minutes-e64d8fc338e4) with the current [yml](./env_dip26.yml)
+  1. [Install uv](https://docs.astral.sh/uv/getting-started/installation/)
+  1. From the root of your clone, create the environment (this reads [pyproject.toml](./pyproject.toml) and the pinned `uv.lock`):
   ```
-  $ conda env create -f env_dip26.yml
+  $ uv sync
   ```
+  1. In VS Code, open any notebook and select the `.venv` Python kernel. Or, from the terminal, `uv run jupyter lab`.
 
+PyTorch is installed from the CUDA 12.6 wheel index. Notebooks that use it will fall back to the CPU if you don't have a CUDA-capable card. (A legacy conda environment, [env_dip26.yml](./env_dip26.yml), is still included for those who prefer it: `conda env create -f env_dip26.yml`.)
+
+### Datasets
+A few chapters (PCA, Neural Nets) use datasets too large to keep in the repository. All of them live under one data root, `~/data` by default. To use a different location, set the `DIP_DATA` environment variable before launching Jupyter.
+
+| Dataset | Used in | How to get it |
+|---|---|---|
+| MNIST | `NeuralNets/mnist_*`, `PCA/pca_mnist` | Downloaded automatically by torchvision the first time |
+| ORL (AT&T) faces | `PCA/pca_*Faces` | [AT&T Database of Faces](https://cam-orl.co.uk/facedatabase.html); unpack to `$DIP_DATA/ORL/` (40 subject folders) |
+| Cropped Yale B | `NeuralNets/yale_*` | [Extended Yale B](http://vision.ucsd.edu/~iskwak/ExtYaleDatabase/ExtYaleB.html), "Cropped Images"; unpack to `$DIP_DATA/CroppedYale/` |
+| Extended Yale B (full) | `NeuralNets/yale_explore` (last section only) | Same page; unpack to `$DIP_DATA/ExtendedYaleB/` |
+
+If a dataset is missing, the notebook stops with a message that says where to download it and where to put it (see [dip_utils/data_paths.py](./dip_utils/data_paths.py)).
 
 ### Opening in Colab
 Alternatively you could work with this textbook through the cloud. Though there's a bit of additional hassle getting this textbook working in Colab, the payoff is that you can [link to your private fork of this project](https://colab.research.google.com/github/googlecolab/colabtools/blob/main/notebooks/colab-github-demo.ipynb) to save your work, without ever having to install a local environment. Additionally, some included notebooks use [PyTorch](https://pytorch.org/) or [xgboost]() or otherwise rely on a cuda-capable graphics card for optimal execution, which you may not have on your local machine (or which can be an additional hassle to get working). 

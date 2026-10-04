@@ -15,7 +15,6 @@ from matplotlib import cm # all the colormaps...
 
 from matplotlib import animation
 from IPython.display import HTML, Image
-import cv2
 import os
 
 
@@ -317,12 +316,14 @@ def loadvideo(filename: str) -> np.ndarray:
     Args:
         filename (str): filename of video
     Returns:
-        A np.ndarray with dimensions (channels=3, frames, height, width). The
+        A np.ndarray with dimensions (frames, height, width, channels=3). The
         values will be uint8's ranging from 0 to 255.
     Raises:
         FileNotFoundError: Could not find `filename`
         ValueError: An error occurred while reading the video
     """
+
+    import cv2  # imported here so the rest of vis_utils doesn't require opencv
 
     if not os.path.exists(filename):
         raise FileNotFoundError(filename)
