@@ -63,6 +63,26 @@ def is_activity(relpath):
     return name.startswith(('play_', 'playing_with_'))
 
 
+REL_RE = re.compile(r'(?:\]\(|src=")(?!https?:|mailto:|#)([^)"\s#]+)')
+
+
+def check_relative_links():
+    """Every relative link or image src inside a notebook's markdown should resolve."""
+    bad = 0
+    for rel in ['TOC.ipynb', *book_notebooks()]:
+        nb = json.loads((ROOT / rel).read_text())
+        base = (ROOT / rel).parent
+        for c in nb['cells']:
+            if c['cell_type'] != 'markdown':
+                continue
+            for target in REL_RE.findall(''.join(c['source'])):
+                if not (base / target).exists():
+                    print(f'  BROKEN LINK in {rel}: {target}')
+                    bad += 1
+    print(f'Relative links: {bad} broken.')
+    return bad == 0
+
+
 def run_notebook(relpath, timeout):
     import nbformat
     from nbclient import NotebookClient
@@ -96,7 +116,7 @@ def main():
     parser.add_argument('-j', '--jobs', type=int, default=4, help='parallel notebooks')
     args = parser.parse_args()
 
-    links_ok = check_links()
+    links_ok = check_links() & check_relative_links()
     if args.no_exec:
         return 0 if links_ok else 1
 
