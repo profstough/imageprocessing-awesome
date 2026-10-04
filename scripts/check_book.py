@@ -4,7 +4,10 @@ Book consistency check.
 1. Cross-checks the notebook links in TOC.ipynb against the notebooks on disk:
    every link should resolve, and every notebook should be linked.
 2. Executes notebooks headless (outputs are discarded, never written back) and
-   reports which ones fail.
+   reports which ones fail. In activity notebooks (play_*, playing_with_*), a
+   NameError is expected (checks refer to variables the student defines) and is
+   reported as "activity" rather than a failure. Files some notebooks write into
+   dip_outs/ are restored afterwards.
 
 Usage:
     uv run python scripts/check_book.py               # links + execute everything
@@ -21,6 +24,7 @@ from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+ANSI_RE = re.compile(r'\x1b\[[0-9;]*m')
 LINK_RE = re.compile(r'\]\((\./)?([^)#\s]+\.ipynb)(#[^)]*)?\)')
 
 
@@ -54,6 +58,11 @@ def check_links():
     return ok
 
 
+def is_activity(relpath):
+    name = Path(relpath).name
+    return name.startswith(('play_', 'playing_with_'))
+
+
 def run_notebook(relpath, timeout):
     import nbformat
     from nbclient import NotebookClient
@@ -71,8 +80,9 @@ def run_notebook(relpath, timeout):
         return relpath, 'TIMEOUT', time.time() - start, f'cell exceeded {timeout}s'
     except CellExecutionError as e:
         # Keep the last line of the traceback: usually the exception message.
-        lines = [line for line in str(e).strip().splitlines() if line.strip()]
-        return relpath, 'FAIL', time.time() - start, lines[-1] if lines else repr(e)
+        lines = [line for line in ANSI_RE.sub('', str(e)).strip().splitlines() if line.strip()]
+        status = 'activity' if is_activity(relpath) and e.ename == 'NameError' else 'FAIL'
+        return relpath, status, time.time() - start, lines[-1] if lines else repr(e)
     except Exception as e:  # noqa: BLE001 -- kernel death etc.
         return relpath, 'ERROR', time.time() - start, repr(e)
 
@@ -93,15 +103,20 @@ def main():
     targets = ([Path(n).resolve().relative_to(ROOT).as_posix() for n in args.notebooks]
                or book_notebooks())
     print(f'\nExecuting {len(targets)} notebooks ({args.jobs} at a time)...')
+    outs = {p: p.read_bytes() for p in (ROOT / 'dip_outs').glob('*') if p.is_file()}
     failures = 0
     with ProcessPoolExecutor(max_workers=args.jobs) as pool:
         futures = [pool.submit(run_notebook, t, args.timeout) for t in targets]
         for fut in futures:
             relpath, status, secs, msg = fut.result()
-            failures += status != 'ok'
+            failures += status not in ('ok', 'activity')
             print(f'  {status:7s} {secs:6.1f}s  {relpath}' + (f'\n           {msg}' if msg else ''),
                   flush=True)
-    print(f'\n{len(targets) - failures}/{len(targets)} notebooks executed cleanly.')
+    for p, data in outs.items():
+        if p.read_bytes() != data:
+            p.write_bytes(data)
+    print(f'\n{len(targets) - failures}/{len(targets)} notebooks executed cleanly '
+          f'(or failed only as an unanswered activity).')
     return 0 if (links_ok and failures == 0) else 1
 
 
