@@ -27,7 +27,7 @@ Rules followed throughout:
 
 | Where | Bug |
 |---|---|
-| dip_utils/vis_utils | Top-level `import cv2` with opencv not installed broke the import in about 38 notebooks. |
+| dip_utils/vis_utils | `import cv2` with opencv not declared as a dependency broke the import in about 38 notebooks; added `opencv-python-headless`. |
 | dip_utils/wavelet_utils | `make_random_basis` retried by calling an undefined `makeRandomBasis`. |
 | Entropy/entropy_intro | `vis_hists(I)`: `I` undefined (should be `Ih`), so the notebook crashed. |
 | NeuralNets/mnist_linear, mnist_conv | Train loss was averaged over samples instead of batches, so it printed about 64× too small, and train-vs-test plots weren't comparable. |
