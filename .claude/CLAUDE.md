@@ -9,7 +9,7 @@ This repo is an interactive textbook, *Digital Image Processing in Python* (Josh
 
 ## Layout
 - `TOC.ipynb`: front matter and the table of contents (the book's index). Every notebook should be linked from it.
-- `<Chapter>/`: one folder per topic (NumpyAndVisualization, SensingSamplingQuantization, Color, Enhancement, Entropy, SpatialFiltering, BlockTransform, FFT, PCA, SLIC, Radon, NeuralNets, ...).
+- `<Chapter>/`: one folder per topic (NumpyAndVisualization, SensingSamplingQuantization, Color, Enhancement, Entropy, SpatialFiltering, Segmentation, BlockTransform, FFT, PCA, SLIC, Radon, NeuralNets, ...).
 - `dip_utils/`: shared helpers imported by the notebooks:
   - `vis_utils.py`: `vis_image`, `vis_pair`, `vis_triple`, `vis_hists`, `vis_rgb_cube`/`vis_hsv_cube`/`vis_lab_cube`/`vis_ybr_cube`, `vis_surface`, `vis_blocks`
   - `matrix_utils.py`: `arr_info`
@@ -37,6 +37,10 @@ This repo is an interactive textbook, *Digital Image Processing in Python* (Josh
 - Put `&nbsp;` on its own line before major section headers, for spacing.
 - Interactive demos follow the pattern `plt.ioff()` → figure + `ipywidgets` slider → `slider.observe(update)` → `VBox([slider, fig.canvas])`.
 - Voice: first person, conversational, explains *why* as well as *what*. After an important code cell, add a markdown cell that walks through it. Link back to earlier chapters with relative links (`../Chapter/notebook.ipynb`). The model voice is `Enhancement/enhance_transfer.ipynb`.
+- Reader tasks come in two consistent forms, both anchored, listed in the first-cell contents list when the notebook has one, and preceded by `&nbsp;`:
+  - **In-flow tasks**: `## 🔨 Your Turn: <Task>`, a sentence or two of motivation, `**Task:**` (what to produce and how to tell it worked), `**Guidance:**` (bullets: functions/docs to use, pitfalls, how to check), then one or more empty code cells. Later cells must not depend on the answer.
+  - **End-of-notebook problem sets**: `## 🧠 Further Efforts` (anchor `further`), one framing sentence, then a numbered list of `**Title.**` prompts, each with a `*Guidance:*` line.
+  - Guidance is explicit enough for a reader working alone, but it never gives the answer away (no solution code, no "the answer is").
 - Reuse `dip_utils` helpers before writing new ones. Add a helper to `dip_utils` only when several notebooks need it.
 
 ## Environment & commands
