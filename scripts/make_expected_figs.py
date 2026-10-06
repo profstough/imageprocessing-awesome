@@ -35,6 +35,7 @@ from pathlib import Path
 import nbformat
 from nbclient import NotebookClient
 from nbclient.exceptions import CellExecutionError, DeadKernelError
+from static_nb import make_static
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / 'dip_figs' / 'expected'
@@ -54,6 +55,8 @@ def is_block(cell):
 def notebooks_with_tags():
     found = []
     for p in sorted(ROOT.glob('*/*.ipynb')):
+        if p.relative_to(ROOT).parts[0].startswith(('_', '.')):   # e.g. the _site/ build
+            continue
         nb = nbformat.read(p, as_version=4)
         if any(tagged_names(c) for c in nb.cells):
             found.append(p)
@@ -63,17 +66,11 @@ def notebooks_with_tags():
 def runnable_copy(nb):
     '''Inline figures instead of widgets, so outputs are PNGs; show slider figures (in their
     starting state, or as set by the cell's `expected_snapshot` code).'''
-    run = nbformat.from_dict(nb)
+    run = make_static(nbformat.from_dict(nb))
     for c in run.cells:
-        if c.cell_type != 'code':
-            continue
-        lines = c.source.replace('%matplotlib widget', '%matplotlib inline').split('\n')
-        lines = [('pass  # ' + ln) if ln.strip().startswith(('VBox(', 'AppLayout(', 'plt.ioff()')) else ln
-                 for ln in lines]
         snapshot = c.get('metadata', {}).get('expected_snapshot')
-        if snapshot:
-            lines += ['', snapshot]
-        c.source = '\n'.join(lines)
+        if c.cell_type == 'code' and snapshot:
+            c.source += '\n\n' + snapshot
     return run
 
 

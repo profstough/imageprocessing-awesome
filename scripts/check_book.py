@@ -30,7 +30,8 @@ LINK_RE = re.compile(r'\]\((\./)?([^)#\s]+\.ipynb)(#[^)]*)?\)')
 
 def book_notebooks():
     return sorted(p.relative_to(ROOT).as_posix() for p in ROOT.glob('*/*.ipynb')
-                  if '.ipynb_checkpoints' not in p.parts)
+                  if '.ipynb_checkpoints' not in p.parts
+                  and not p.relative_to(ROOT).parts[0].startswith(('_', '.')))   # e.g. the _site/ build
 
 
 def toc_links():

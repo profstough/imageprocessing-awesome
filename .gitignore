@@ -18,3 +18,4 @@ build/
 *.db
 *.egg/
 *.egg-info/
+_site/
