@@ -48,6 +48,7 @@ This repo is an interactive textbook, *Digital Image Processing in Python* (Josh
 - PyTorch is installed from the CUDA 12.6 index (see `pyproject.toml`). Notebooks must still run on CPU, so guard GPU use with `torch.cuda.is_available()`.
 - Lint helpers: `uv run ruff check dip_utils scripts`.
 - Book check: `uv run python scripts/check_book.py`. It cross-checks TOC links against notebook files and executes notebooks headless. Use `--no-exec` for links only, or pass notebook paths to run a subset.
+- Website: `uv run python scripts/build_site.py` stages the book in `_site/` (generating `myst.yml` from `TOC.ipynb`, static figures, dataset/GPU notebooks and exercises not executed) and builds it with Jupyter Book 2 into `_site/_build/html`. Needs Node.js >= 20. `.github/workflows/publish-book.yml` does the same on every push to `main` and deploys to GitHub Pages. Never edit `_site/`; change the notebooks or the script.
 - Expected outputs: in notebooks that need a dataset or GPU, key cells carry the tag `expected:<name>`. `uv run python scripts/make_expected_figs.py [notebook ...]` runs them with the data, saves those cells' figures (or printed text) to `dip_figs/expected/<notebook>/`, and maintains the collapsed "Expected output" markdown cell (tag `expected-output`) after each one. Don't edit those markdown cells by hand; re-run the script after changing a tagged cell or anything before it. `--blocks-only` rebuilds the cells without executing.
 - Review notebook diffs with `uv run nbdiff-web main -- <notebook>`.
 
