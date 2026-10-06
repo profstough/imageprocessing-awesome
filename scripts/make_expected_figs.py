@@ -13,6 +13,11 @@ To mark a cell, give it the tag `expected:<name>` (in VS Code: "Add Cell Tag";
 in JupyterLab: the property inspector), with <name> a short file-name-safe
 label, unique within the notebook. Then run this script on that notebook.
 
+Interactive cells are captured in their starting state. To capture a more
+telling state instead, add code to the cell's metadata under
+`expected_snapshot` (e.g. "slider.value = 10"); it's appended to the cell
+only when this script runs it, so readers still start where the cell starts.
+
 Usage:
     uv run python scripts/make_expected_figs.py                 # every notebook with tagged cells
     uv run python scripts/make_expected_figs.py NeuralNets/yale_conv.ipynb
@@ -56,7 +61,8 @@ def notebooks_with_tags():
 
 
 def runnable_copy(nb):
-    '''Inline figures instead of widgets, so outputs are PNGs; show slider figures at their initial state.'''
+    '''Inline figures instead of widgets, so outputs are PNGs; show slider figures (in their
+    starting state, or as set by the cell's `expected_snapshot` code).'''
     run = nbformat.from_dict(nb)
     for c in run.cells:
         if c.cell_type != 'code':
@@ -64,6 +70,9 @@ def runnable_copy(nb):
         lines = c.source.replace('%matplotlib widget', '%matplotlib inline').split('\n')
         lines = [('pass  # ' + ln) if ln.strip().startswith(('VBox(', 'AppLayout(', 'plt.ioff()')) else ln
                  for ln in lines]
+        snapshot = c.get('metadata', {}).get('expected_snapshot')
+        if snapshot:
+            lines += ['', snapshot]
         c.source = '\n'.join(lines)
     return run
 
@@ -110,7 +119,7 @@ def saved_files(stem, name):
     return files or sorted(folder.glob(f'{name}.txt'))
 
 
-def block_source(nb_path, files):
+def block_source(nb_path, files, snapshot=None):
     body = []
     for f in files:
         rel = Path('..') / f.relative_to(ROOT)
@@ -118,9 +127,11 @@ def block_source(nb_path, files):
             body.append(f'<img src="{rel.as_posix()}" alt="expected output" style="max-width:100%">')
         else:
             body.append('```text\n' + f.read_text().rstrip('\n') + '\n```')
-    return ('<details>\n'
-            '<summary><b>Expected output</b> (what the cell above should show, if you can\'t run it)</summary>\n\n'
-            + '\n\n'.join(body) + '\n\n</details>')
+    summary = '<b>Expected output</b> (what the cell above should show, if you can\'t run it)'
+    if snapshot:
+        code = snapshot.split('#')[0].strip()
+        summary = f'<b>Expected output</b> (what the cell above shows after <code>{code}</code>)'
+    return f'<details>\n<summary>{summary}</summary>\n\n' + '\n\n'.join(body) + '\n\n</details>'
 
 
 def update_blocks(nb_path, nb):
@@ -136,7 +147,8 @@ def update_blocks(nb_path, nb):
             if not files:
                 print(f'    no saved output for {name}; run without --blocks-only')
                 continue
-            block = nbformat.v4.new_markdown_cell(block_source(nb_path, files))
+            block = nbformat.v4.new_markdown_cell(
+                block_source(nb_path, files, c.get('metadata', {}).get('expected_snapshot')))
             block.metadata['tags'] = [BLOCK_TAG]
             cells.append(block)
     nb.cells = cells
