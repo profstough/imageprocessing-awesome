@@ -1,0 +1,1 @@
+copying A and B to cuda took 0.130 s

@@ -1,0 +1,2 @@
+float64: cpu     40.4 ms, cuda     98.0 ms, speedup   0.4x
+float32: cpu     21.1 ms, cuda      2.2 ms, speedup   9.8x

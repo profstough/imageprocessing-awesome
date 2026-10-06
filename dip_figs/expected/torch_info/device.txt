@@ -1,0 +1,2 @@
+Using cuda
+NVIDIA RTX A1000 Laptop GPU
