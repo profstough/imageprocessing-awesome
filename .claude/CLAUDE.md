@@ -16,7 +16,7 @@ This repo is an interactive textbook, *Digital Image Processing in Python* (Josh
   - `wavelet_utils.py`: Haar/DCT/standard/random/KLT basis matrices
   - `huff_utils.py`, `huffnode.py`: Huffman coding
   - `data_paths.py`: dataset locations
-- `dip_pics/`: input images. `dip_figs/`: explanatory figures. `dip_outs/`: generated outputs.
+- `dip_pics/`: input images. `dip_figs/`: explanatory figures (`dip_figs/expected/`: generated expected outputs, see below). `dip_outs/`: generated outputs.
 - Datasets (MNIST, ORL, Yale) live outside the repo under `$DIP_DATA` (default `~/data`). Notebooks must get their paths from `dip_utils/data_paths.py`, never from hardcoded absolute paths.
 
 ## Notebook conventions (match these when editing or writing)
@@ -48,6 +48,7 @@ This repo is an interactive textbook, *Digital Image Processing in Python* (Josh
 - PyTorch is installed from the CUDA 12.6 index (see `pyproject.toml`). Notebooks must still run on CPU, so guard GPU use with `torch.cuda.is_available()`.
 - Lint helpers: `uv run ruff check dip_utils scripts`.
 - Book check: `uv run python scripts/check_book.py`. It cross-checks TOC links against notebook files and executes notebooks headless. Use `--no-exec` for links only, or pass notebook paths to run a subset.
+- Expected outputs: in notebooks that need a dataset or GPU, key cells carry the tag `expected:<name>`. `uv run python scripts/make_expected_figs.py [notebook ...]` runs them with the data, saves those cells' figures (or printed text) to `dip_figs/expected/<notebook>/`, and maintains the collapsed "Expected output" markdown cell (tag `expected-output`) after each one. Don't edit those markdown cells by hand; re-run the script after changing a tagged cell or anything before it. `--blocks-only` rebuilds the cells without executing.
 - Review notebook diffs with `uv run nbdiff-web main -- <notebook>`.
 
 ## Workflow

@@ -31,6 +31,8 @@ A few chapters (PCA, Neural Nets) use datasets too large to keep in the reposito
 | Cropped Yale B | `NeuralNets/yale_*` | [Extended Yale B](http://vision.ucsd.edu/~iskwak/ExtYaleDatabase/ExtYaleB.html), "Cropped Images"; unpack to `$DIP_DATA/CroppedYale/` |
 | Extended Yale B (full) | `NeuralNets/yale_explore` (last section only) | Same page; unpack to `$DIP_DATA/ExtendedYaleB/` |
 
+No dataset? You can still read those notebooks: after each of their key cells, an **Expected output** dropdown shows what the cell produces when run with the data.
+
 If a dataset is missing, the notebook stops with a message that says where to download it and where to put it (see [dip_utils/data_paths.py](./dip_utils/data_paths.py)).
 
 ### Opening in Colab
