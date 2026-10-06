@@ -38,15 +38,6 @@ No dataset? You can still read those notebooks: after each of their key cells, a
 If a dataset is missing, the notebook stops with a message that says where to download it and where to put it (see [dip_utils/data_paths.py](./dip_utils/data_paths.py)).
 
 ### Opening in Colab
-Alternatively you could work with this textbook through the cloud. Though there's a bit of additional hassle getting this textbook working in Colab, the payoff is that you can [link to your private fork of this project](https://colab.research.google.com/github/googlecolab/colabtools/blob/main/notebooks/colab-github-demo.ipynb) to save your work, without ever having to install a local environment. Additionally, some included notebooks use [PyTorch](https://pytorch.org/) or otherwise rely on a cuda-capable graphics card for optimal execution, which you may not have on your local machine (or which can be an additional hassle to get working). 
+Alternatively you can work with this textbook in the cloud, through [Google Colab](https://colab.research.google.com/), with no local install and with a free GPU for the neural network chapters. The notebooks rely on the book's other folders (`dip_utils/`, `dip_pics/`), so a notebook opened in Colab by itself won't run. Instead, open the setup notebook below and run it: it copies the book (or your private fork) into your Google Drive, where your work is kept between sessions, and gives you a short setup cell to paste at the top of each notebook you open.
 
-When executing in Colab, to every notebook that begins with `%matplotlib widget` you should:
-
-- Insert a Code cell at the top and execute `!pip install ipympl`. This will install [ipympl](https://github.com/matplotlib/ipympl) in your Colab session, for producing interactive plots. 
-- Then, insert a Code cell after with 
-```python
-from google.colab import output
-output.enable_custom_widget_manager()
-```
-
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/profstough/imageprocessing-awesome/blob/main/TOC.ipynb)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/profstough/imageprocessing-awesome/blob/main/colab_setup.ipynb)
