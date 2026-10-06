@@ -44,6 +44,17 @@ Documented in `.claude/CLAUDE.md` and explained to readers in the TOC's "Using t
 | 15 | Activity notebooks | The `play_*` notebooks keep their own headers (only marked 🔨 in the TOC), since I only touch scaffolding there. Want their prompt headers converted to the 🔨 format too? |
 | 16 | NeuralNets/yale_conv | `random_split` runs before `torch.manual_seed`, so the split, and the accuracy (93–96% in my runs), changes every run. The text now says so. Seed the split for reproducibility? |
 
+## Round 3: your answers to ⚑11–16
+
+| # | Your decision | What I did |
+|---|---|---|
+| 11 | Credit Claude, linking the original repo, in the README and the preface. | One italic line after the opening paragraph of both the README and the TOC's Preface, linking [joshuastough/imageprocessing](https://github.com/joshuastough/imageprocessing). |
+| 12 | Discuss Parseval, but keep the real reconstruction-error computation; revert. | reconstruction_comparison now reconstructs every image (blocks → keep k → back → reassembled), shows reconstructions and difference images for all six bases at k = 8, and computes every PSNR on the curves and in the table from the actual reconstructions. Parseval follows as the explanation, checked against the computed error (both 2.678e-04). The numbers are unchanged. |
+| 13 | Show the planned `dip_utils` corrections first. | Plan proposed; nothing changed yet. |
+| 14 | Generate the dataset notebooks' example outputs with the data, store them as PNGs in `dip_figs`, and show them as "what you should see". | Design proposed; waiting for your go-ahead. |
+| 15 | No hammers inside `play_*`; make sure they're all in the TOC. | All 8 activity notebooks are in the TOC, each marked 🔨. Nothing changed. |
+| 16 | Seed the yale_conv split (42). | `random_split(..., generator=torch.Generator().manual_seed(42))`, explained in the markdown. Two runs: test accuracy 97–98% (238–241 of 245), test loss about 0.1–0.15; the text says so. |
+
 ## Round 1: open decisions (⚑), now resolved above
 
 | # | Where | Question |
@@ -77,7 +88,7 @@ Documented in `.claude/CLAUDE.md` and explained to readers in the TOC's "Using t
 | SensingSamplingQuantization/spatial_resolution | (round 2) A comment said "bilinear sampling" on an `order=0` (nearest neighbor) call. |
 | SensingSamplingQuantization/color_quantization | (round 2) Text referred to `I6`; the variable is `I4`. |
 | BlockTransform/intro_spatial_coherence | (round 2) The 2D Haar "Extension" said wavelets are "precisely how JPEG" compresses (JPEG uses the DCT; wavelets are JPEG 2000), had the LH/HL edge orientations swapped, and wrote the block with `vmatrix` (determinant bars). |
-| NeuralNets/yale_conv | (round 2) My round-1 text claimed about 96% accuracy; the unseeded split gives 93–96% from run to run. Now says so (⚑16). |
+| NeuralNets/yale_conv | (round 2) My round-1 text claimed about 96% accuracy; the unseeded split gave 93–96% from run to run. (Round 3: split seeded, about 98%.) |
 | Hardcoded data paths | `/home/dip365/...` and `~/data` paths in 9 notebooks now go through `dip_utils/data_paths.py`. 3 notebooks failed in the baseline because of them. |
 | Links | 9 broken relative links, 1 dead hotlinked image, about 25 versioned doc links. |
 
