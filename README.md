@@ -1,6 +1,8 @@
 ## imageprocessing
 ### [Joshua Stough](http://joshuastough.com), 202- (last update Spring 2026)
 
+**Read it online:** [profstough.github.io/imageprocessing-awesome](https://profstough.github.io/imageprocessing-awesome/). To run and change the notebooks, set up a local copy as described below.
+
 Imaging is everywhere! In this text, we will cover broadly the acquisition, processing, and analysis of digital images, covering topics ranging from the human visual system, to image and video compression algorithms, to pattern recognition and machine learning within the context of automatic image understanding. Best of all, for the sake of access, immediacy, and usability, all content and code examples are in the form of interactive Jupyterlab notebooks, including integrated activities!
 
 *Written with extensive assistance of Claude in drafting narrative and copyediting, based on the draft notebook collection at [joshuastough/imageprocessing](https://github.com/joshuastough/imageprocessing).*
@@ -36,7 +38,7 @@ No dataset? You can still read those notebooks: after each of their key cells, a
 If a dataset is missing, the notebook stops with a message that says where to download it and where to put it (see [dip_utils/data_paths.py](./dip_utils/data_paths.py)).
 
 ### Opening in Colab
-Alternatively you could work with this textbook through the cloud. Though there's a bit of additional hassle getting this textbook working in Colab, the payoff is that you can [link to your private fork of this project](https://colab.research.google.com/github/googlecolab/colabtools/blob/main/notebooks/colab-github-demo.ipynb) to save your work, without ever having to install a local environment. Additionally, some included notebooks use [PyTorch](https://pytorch.org/) or [xgboost]() or otherwise rely on a cuda-capable graphics card for optimal execution, which you may not have on your local machine (or which can be an additional hassle to get working). 
+Alternatively you could work with this textbook through the cloud. Though there's a bit of additional hassle getting this textbook working in Colab, the payoff is that you can [link to your private fork of this project](https://colab.research.google.com/github/googlecolab/colabtools/blob/main/notebooks/colab-github-demo.ipynb) to save your work, without ever having to install a local environment. Additionally, some included notebooks use [PyTorch](https://pytorch.org/) or otherwise rely on a cuda-capable graphics card for optimal execution, which you may not have on your local machine (or which can be an additional hassle to get working). 
 
 When executing in Colab, to every notebook that begins with `%matplotlib widget` you should:
 
@@ -47,4 +49,4 @@ from google.colab import output
 output.enable_custom_widget_manager()
 ```
 
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/joshuastough/imageprocessing/blob/main/TOC.ipynb)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/profstough/imageprocessing-awesome/blob/main/TOC.ipynb)
