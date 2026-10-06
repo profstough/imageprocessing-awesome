@@ -3,10 +3,12 @@ Huffman Tree/Coding Utility Functions
 stough 202-
 """
 
+from heapq import heapify, heappop, heappush
+
 import matplotlib.pyplot as plt
 import numpy as np
-from heapq import *
 from huffnode import HuffNode
+
 
 #Build a huffman tree based on some image I, return the tree
 #Assuming a uint8 single channel image
@@ -56,7 +58,7 @@ def build_huff_pair(I):
     tree = build_huff_tree(I)
     encoder = build_huff_encoder(tree)
     #the following should work because encoder[key] should also be unique.
-    decoder = dict((encoder[key], key) for key in encoder)
+    decoder = {code: symbol for symbol, code in encoder.items()}
     return encoder, decoder
 
 def load_huffable_image(I):

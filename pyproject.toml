@@ -39,3 +39,8 @@ dev = [
     "nbformat>=5.10.4",
     "ruff>=0.16.10",
 ]
+
+[tool.ruff]
+# The lint check (`uv run ruff check dip_utils scripts`) uses ruff's default rule set,
+# which changes between minor versions; pin the version so the rules stay put.
+required-version = ">=0.16,<0.17"

@@ -5,15 +5,10 @@ DIP
 Simple binary tree class for huffman coding demo.
 """
 
-class HuffNode(object):
-    def __init__(self):
-        self.l = self.r = None
-        self.f = -1 #frequency
-        self.s = 'a' #symbol, or intensity
-
+class HuffNode:
     def __init__(self, freq, symbol ='a', left = None, right = None):
-        self.f = freq
-        self.s = symbol
+        self.f = freq #frequency
+        self.s = symbol #symbol, or intensity
         self.l = left
         self.r = right
 
@@ -33,11 +28,7 @@ class HuffNode(object):
         return (self.l is None) and (self.r is None)
 
     def __str__(self):
-        return '[node: freq %d: %s]' % \
-                (self.f, ['', str(self.s)][self.is_leaf()])
-
-    def __cmp__(self, other):
-        return self.f - other.f
+        return f"[node: freq {self.f}: {['', str(self.s)][self.is_leaf()]}]"
 
     def __eq__(self, other):
         return self.f == other.f

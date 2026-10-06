@@ -9,10 +9,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.linalg import orth
 
+
 #See DIP 6.9.
 def make_haar_matrix(size=4):
     if not np.log2(size).is_integer():
-        raise ValueError('makeHaarMatrix: input must be power of 2 (%d).' % size)
+        raise ValueError(f'make_haar_matrix: input must be power of 2 ({size}).')
 
     H = np.zeros((size,size))
     H[0,:] = 1.
@@ -57,7 +58,6 @@ https://docs.scipy.org/doc/numpy/reference/generated/numpy.linalg.eig.html
 https://docs.scipy.org/doc/numpy/reference/generated/numpy.cov.html
 """
 def make_klt_basis(I, size=4):
-    Ishape = I.shape
     #Get size x whatever samples.
     colSamples = np.reshape(I, (size, -1), order='F')
     if (len(I.shape) == 3):
@@ -98,7 +98,7 @@ def vis_blocks(H, ax = None):
     sh = H.shape[0]
     
     if ax is None:
-        f, ax = plt.subplots(sh, sh, figsize=(5,5))
+        _, ax = plt.subplots(sh, sh, figsize=(5,5))
     
     for i in range(sh):
         for j in range(sh):

@@ -7,16 +7,14 @@ Also a lab_uniform, which normalizes the perceived intensity of
 custom colormaps.
 '''
 
+import os
+
+import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-import skimage.color as color
-# from mpl_toolkits.mplot3d import Axes3D 
-from matplotlib import cm # all the colormaps...
-
-from matplotlib import animation
-from IPython.display import HTML, Image
-import cv2
-import os
+from IPython.display import HTML
+from matplotlib import animation, cm  # cm: all the colormaps
+from skimage import color
 
 
 def vis_rgb_cube(I, numpoints=5000, fixaxis=True):
@@ -197,7 +195,7 @@ def vis_image(I, figsize=(4,3), title='Image', show_ticks = True, **kwargs):
     vis_image(I, figsize=(4,3), title='Image', show_ticks = True, **kwargs): 
     plot an image. Very simple, but save a little typing.
     '''
-    f, ax = plt.subplots(1,1, figsize=figsize)
+    _, ax = plt.subplots(1,1, figsize=figsize)
     ax.imshow(I, **kwargs)
     ax.set_title(title)
     
@@ -217,7 +215,7 @@ def vis_hists(I, bins = 256):
     
     _, allbins = np.histogram(I.ravel(), bins=bins)
     
-    f, axarr = plt.subplots(1,2, figsize=(9, 3))
+    _, axarr = plt.subplots(1,2, figsize=(9, 3))
 
     axarr[0].imshow(I, cmap=[None, 'gray'][len(I.shape)==2]) #https://matplotlib.org/api/_as_gen/matplotlib.pyplot.imshow.html
     axarr[0].set_title('Image')
@@ -240,7 +238,7 @@ def vis_pair(I, J, figsize = (8,3), shared = True,
     produce a plot of images I and J together. By default takes care of sharing axes to provide
     a little 1x2 plot without all the coding.
     '''
-    f, ax = plt.subplots(1,2, figsize=figsize, sharex = shared, sharey = shared)
+    _, ax = plt.subplots(1,2, figsize=figsize, sharex = shared, sharey = shared)
     ax[0].imshow(I, **kwargs)
     ax[0].set_title(first_title)
     ax[1].imshow(J, **kwargs)
@@ -261,7 +259,7 @@ def vis_triple(I, J, K, figsize = (8,3), shared = True,
     produce a plot of images I and J together. By default takes care of sharing axes to provide
     a little 1x2 plot without all the coding.
     '''
-    f, ax = plt.subplots(1,3, figsize=figsize, sharex = shared, sharey = shared)
+    _, ax = plt.subplots(1,3, figsize=figsize, sharex = shared, sharey = shared)
     ax[0].imshow(I, **kwargs)
     ax[0].set_title(first_title)
     ax[1].imshow(J, **kwargs)
@@ -337,7 +335,7 @@ def loadvideo(filename: str) -> np.ndarray:
     for count in range(frame_count):
         ret, frame = capture.read()
         if not ret:
-            raise ValueError("Failed to load frame #{} of {}.".format(count, filename))
+            raise ValueError(f"Failed to load frame #{count} of {filename}.")
 
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         v[count, :, :] = frame
@@ -363,7 +361,7 @@ def makeVideo(arr, cmap=None):
     
     if len(arr.shape) == 4 and arr.shape[-1] == 1: # one channel, otherwise imshow gets confused
         arr = arr.squeeze()
-        print('New arr shape {}.'.format(arr.shape))
+        print(f'New arr shape {arr.shape}.')
     
     f, ax = plt.subplots(1,1, figsize=(6,4))
     dispArtist = ax.imshow(arr[0,...], interpolation=None, cmap=cmap)
