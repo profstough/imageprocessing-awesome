@@ -254,9 +254,18 @@ All six follow the book's conventions, run headless, and had every number and vi
 | BlockTransform/reconstruction_comparison ("Comparing Reconstruction Efficiency") | Blocks as 64-vectors, bases as Kronecker products; Parseval (PSNR from dropped energy, checked against an actual block reconstruction); the 64-D KLT (and `make_klt_basis`'s separable version); PSNR curves for all six bases (DCT within 0.07–0.35 dB of each image's own KLT on four images; a borrowed KLT is no better than the DCT); KLT vs DCT patterns; why JPEG chose the DCT. Covers the TOC's KLT entry. | 🔨 beat the DCT by 1 dB (checked feasible: photos and skimage textures only get about 0.5 dB, so the guidance points to synthetic images). 🧠 adaptive selection; block size; color. |
 | FFT/dft_intro ("The Discrete Fourier Transform") | Euler's formula and sampled phasors; the DFT matrix next to the DCT's, checked against `np.fft.fft` and FF^H = NI; magnitude and phase of a shifted cosine; aliasing (7 Hz sampled at 8 Hz equals 1 Hz) linked to moiré and anti-aliasing; a 10-line recursive radix-2 FFT with timing (the prose is machine-independent: the timing curves were bumpy); separable 2D, then on to fft_intro. Now first in the Fourier section of the TOC. | 🔨 find three hidden tones in noise. 🧠 spectral leakage; DCT vs DFT on a ramp; circular convolution. |
 
-## Phase 4: publishing (not started)
+## Phase 4: publishing
 
-Your decision on ⚑5: dataset/GPU notebooks are published with committed outputs; datasets stay out of the repo. Open question on the mechanism: ⚑14. The plan is Jupyter Book 2 (`myst.yml` mirroring the TOC), a GitHub Actions workflow that builds and deploys to GitHub Pages, Colab launch links on each page, and retiring the Jekyll `_config.yml`. Deploying is outward-facing, so I'll set it up for your review rather than push.
+The book is published with Jupyter Book 2 (MyST) to GitHub Pages, at https://profstough.github.io/imageprocessing-awesome/, rebuilt on every push to `main` (`.github/workflows/publish-book.yml`).
+
+- `scripts/build_site.py` stages a copy of the book in `_site/` (gitignored) and builds it there; the repository's notebooks are never modified. It generates `myst.yml` from `TOC.ipynb`, so the site's navigation and labels (🔨 included) always match the TOC.
+- Figures are static, drawn inline in their starting state (`scripts/static_nb.py`, shared with `make_expected_figs.py`). Sliders and mouse-drawing demos don't respond on the website; readers run the notebooks for that.
+- Dataset/GPU notebooks (those with `expected:` cells, now including torch_info) and the exercises aren't executed; the dataset notebooks show their Expected output dropdowns. So the CI build doesn't install PyTorch.
+- `<a id>` anchors become project-wide MyST labels, prefixed with the notebook's name; links to them are rewritten to match.
+- Fixed along the way: two links that relied on Jupyter's automatic heading anchors (spatial_ops → `#histograms`, probability_gauss_uniform → `#3d_plotting`); an empty `[xgboost]()` link in the README (no notebook uses xgboost); the README's Colab badge pointed at the old repo. The Jekyll `_config.yml` is retired.
+- ⚑17: color_YCbCr hotlinked a figure (the RGB cube in YCbCr axes) from a paper on Semantic Scholar's CDN, which the site can't bundle, and which isn't ours to copy. It's replaced by our own version, `dip_figs/ycbcr_cube.png` (made by `scripts/make_ycbcr_cube_figure.py`); the original URL is kept in an HTML comment. OK?
+- Not done: per-page "Open in Colab" buttons. A notebook opened from GitHub in Colab doesn't get `dip_utils/` or `dip_pics/`, so it would fail at its imports. Making that work needs a setup cell that clones the repo, worth deciding together (⚑18).
+- Locally, building needs Node.js >= 20 (18.18 fails in the site step).
 
 ## Commit index
 
