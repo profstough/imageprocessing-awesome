@@ -41,10 +41,11 @@ REPO_URL = 'https://github.com/profstough/imageprocessing-awesome'
 
 # Copied into the staging folder besides the chapter folders.
 SUPPORT = ['dip_pics', 'dip_figs', 'dip_utils', 'dip_outs', 'cc-license.png',
-           'README.md', 'private_fork_instructions.md']
-# Markdown pages linked from the TOC notebook, shown at the end of the site.
+           'README.md', 'private_fork_instructions.md', 'colab_setup.ipynb']
+# Pages linked from the TOC notebook, shown at the end of the site. Notebooks here are not executed.
 EXTRA_PAGES = [('README.md', 'About the Repository'),
-               ('private_fork_instructions.md', 'Making a Private Fork')]
+               ('private_fork_instructions.md', 'Making a Private Fork'),
+               ('colab_setup.ipynb', 'Running in Colab')]
 
 ITEM_RE = re.compile(r'^( *)1\. (.*?)\s*$')
 LINK_RE = re.compile(r'\[(.*?)\]\((?:\./)?([^)#\s]+\.ipynb)\)')
@@ -153,7 +154,7 @@ def retarget(m, path, anchors):
     return m[0]
 
 
-def stage_notebook(path, label, anchors):
+def stage_notebook(path, label, anchors, execute=True):
     nb = nbformat.read(path, as_version=4)
     needs_data = any(t.startswith('expected:') for c in nb.cells for t in c.get('metadata', {}).get('tags', []))
     is_exercise = path.name.startswith(('play_', 'playing_with_'))
@@ -166,7 +167,7 @@ def stage_notebook(path, label, anchors):
         if 'expected-output' in c.get('metadata', {}).get('tags', []):
             c.source = to_dropdown(c.source)
     front = {'short_title': label}
-    if needs_data or is_exercise:
+    if needs_data or is_exercise or not execute:
         front['execute'] = {'skip': True}
     front_cell = nbformat.v4.new_markdown_cell('---\n' + yaml.safe_dump(front, allow_unicode=True) + '---')
     nb.cells.insert(0, front_cell)
@@ -198,7 +199,10 @@ def stage():
     stage_notebook(SITE / 'TOC.ipynb', 'Contents', anchors)
     for file, title in EXTRA_PAGES:
         p = SITE / file
-        p.write_text(f'---\ntitle: {title}\n---\n\n' + p.read_text())
+        if p.suffix == '.ipynb':
+            stage_notebook(p, title, anchors, execute=False)
+        else:
+            p.write_text(f'---\ntitle: {title}\n---\n\n' + p.read_text())
 
     write_myst_yml(myst_toc(items))
     print(f'staged {sum(1 for _ in SITE.glob("*/*.ipynb"))} notebooks in {SITE.relative_to(ROOT)}/')
