@@ -9,6 +9,7 @@ This repo is an interactive textbook, *Digital Image Processing in Python* (Josh
 
 ## Layout
 - `TOC.ipynb`: front matter and the table of contents (the book's index). Every notebook should be linked from it.
+- `colab_setup.ipynb`: for Colab users; clones the book into Google Drive and prints a per-notebook setup cell. It only runs in Colab, so `check_book.py` and the site build don't execute it.
 - `<Chapter>/`: one folder per topic (NumpyAndVisualization, SensingSamplingQuantization, Color, Enhancement, Entropy, SpatialFiltering, Segmentation, BlockTransform, FFT, PCA, SLIC, Radon, NeuralNets, ...).
 - `dip_utils/`: shared helpers imported by the notebooks:
   - `vis_utils.py`: `vis_image`, `vis_pair`, `vis_triple`, `vis_hists`, `vis_rgb_cube`/`vis_hsv_cube`/`vis_lab_cube`/`vis_ybr_cube`, `vis_surface`, `vis_blocks`
