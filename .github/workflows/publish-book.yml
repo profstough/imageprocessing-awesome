@@ -1,0 +1,56 @@
+# Build the book with Jupyter Book 2 and publish it to GitHub Pages.
+# Runs on every push to main, or by hand from the Actions tab.
+# See scripts/build_site.py for how the notebooks are adapted for the website.
+name: Publish book
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: astral-sh/setup-uv@v6
+
+      # PyTorch and its CUDA libraries are several GB, and only the notebooks that
+      # aren't executed for the website (datasets/GPU) use them, so skip them here.
+      - name: Install Python dependencies, without PyTorch
+        run: |
+          SKIP=$(python3 -c "import tomllib; names = {p['name'] for p in tomllib.load(open('uv.lock', 'rb'))['package']}; print(' '.join('--no-install-package ' + n for n in sorted(names) if n in ('torch', 'torchvision', 'triton') or n.startswith('nvidia-')))")
+          uv sync $SKIP
+
+      - name: Build the site
+        env:
+          BASE_URL: /${{ github.event.repository.name }}
+        run: uv run python scripts/build_site.py
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site/_build/html
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
