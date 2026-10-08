@@ -285,6 +285,14 @@ Your idea: every notebook opens with a "what are we doing here" figure, its proc
   - Worth a look: reconstruction_comparison (its difference panel is flat gray, which is the point but reads as empty), yale_conv and mnist_conv (training curves; yale_conv's misclassified faces were too dark), and pca_scatterFaces (its faces are randomly chosen each run).
 - ⚑20 (done): `dip_figs/eyeball.png` (color_intro) is small (310×262) with tiny labels and of unknown origin; suggest replacing it with a public-domain eye diagram from Wikimedia Commons. Replaced with the CC BY-SA 3.0 schematic from Wikimedia Commons (Rhcastilhos and Jmarchn; it labels the fovea, macula and optic disc, which the text discusses), credited under the figure; a public-domain NEI diagram was the alternative but has no fovea. The 17 fixed-size images (outside the Expected output blocks) now use `width`/`height` attributes.
 
+## Tiny side-by-side images on the site (2026-10-08)
+
+Your report: the eye diagram in color_intro and figures in color_YCbCr were tiny in the book (fine in VS Code). Cause: the book theme renders images that share a paragraph as inline slivers. Seven paragraphs in color_intro, color_YCbCr (2), color_HSV, color_Lab, spatial_resolution had side-by-side images.
+
+- `build_site.py` now gives each image in an images-only paragraph its own paragraph on the site, so they stack at their set sizes. The notebooks are unchanged, still side by side in VS Code and Jupyter. Checked with screenshots of all five pages in a local build.
+- color_YCbCr's CbCr-plane image was hotlinked from Wikimedia, which refuses the build's download, so it was broken on the live site (`build/undefined`). It's public domain (Simon A. Eugster), now a local copy, `dip_figs/ycbcr_cbcr_plane.png`, with the source in a comment. Our 3D cube figure is trimmed and shown at 300px.
+- ⚑21: color_Lab and color_YCbCr still show images hotlinked from Pinterest (`i.pinimg.com`, the RGB cube with labeled axes) and colorapplications.com (a 3D Lab figure, over plain http). They render, but their licenses are unknown and the links could break. Replace with our own figures (like the YCbCr cube), or keep?
+
 ## Commit index
 
 Generated with `git log --reverse --format='%h %s' main..book-revision`; see that command for the current list.
