@@ -291,7 +291,7 @@ Your report: the eye diagram in color_intro and figures in color_YCbCr were tiny
 
 - `build_site.py` now gives each image in an images-only paragraph its own paragraph on the site, so they stack at their set sizes. The notebooks are unchanged, still side by side in VS Code and Jupyter. Checked with screenshots of all five pages in a local build.
 - color_YCbCr's CbCr-plane image was hotlinked from Wikimedia, which refuses the build's download, so it was broken on the live site (`build/undefined`). It's public domain (Simon A. Eugster), now a local copy, `dip_figs/ycbcr_cbcr_plane.png`, with the source in a comment. Our 3D cube figure is trimmed and shown at 300px.
-- ⚑21: color_Lab and color_YCbCr still show images hotlinked from Pinterest (`i.pinimg.com`, the RGB cube with labeled axes) and colorapplications.com (a 3D Lab figure, over plain http). They render, but their licenses are unknown and the links could break. Replace with our own figures (like the YCbCr cube), or keep?
+- ⚑21 (your call: replace): `scripts/make_colorspace_figures.py` (renamed from make_ycbcr_cube_figure.py) now also draws `dip_figs/rgb_cube.png` (the cube as colored blocks with red/green/blue axes; replaces the Pinterest cube in color_YCbCr and color_Lab) and `dip_figs/lab_gamut.png` (the RGB cube's surface in L*a*b* coordinates, matching the YCbCr figure; replaces the colorapplications.com figure in color_Lab). The old URLs are kept in HTML comments. The YCbCr cube's Y label had been clipped by the tighter crop; padded.
 
 ## Commit index
 
