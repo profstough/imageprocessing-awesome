@@ -12,12 +12,17 @@ chapter a thumbnail.
 Interactive cells are captured in their starting state. As in
 make_expected_figs.py, code in the tagged cell's metadata under
 `header_snapshot` (e.g. "slider.value = 10") is appended when this script runs
-the cell, to capture a more telling state.
+the cell, to capture a more telling state. The cell's current figure is saved,
+unless the snapshot names another with `header_fig = <figure>` (e.g. when the
+cell has already shown its figures with plt.show()).
 
 Exercises have nothing to run, and their header must never show an answer. For
 them, put self-contained code that draws the *problem* (e.g. the kinds of
 images the reader will work on) in the notebook's metadata under `header_code`;
 it runs on its own, from the notebook's folder, with dip_utils importable.
+
+The header is shown 600 pixels wide; a square or tall figure can set a smaller
+`header_width` in the notebook's metadata.
 
 Usage:
     uv run python scripts/make_header_figs.py                   # every notebook with a header
@@ -67,8 +72,9 @@ def notebooks_with_headers():
 
 
 def save_code(fig_path):
-    return (f"\n\nplt.gcf().savefig({str(fig_path)!r}, dpi={DPI}, bbox_inches='tight', "
-            f"facecolor='white', pil_kwargs={{'quality': {QUALITY}}})")
+    return (f"\n\n(header_fig if 'header_fig' in dir() else plt.gcf()).savefig(\n"
+            f"    {str(fig_path)!r}, dpi={DPI}, bbox_inches='tight', "
+            f"pil_kwargs={{'quality': {QUALITY}}})")
 
 
 def runnable_copy(nb, fig_path):
@@ -102,7 +108,7 @@ def update_line(nb_path, nb):
         print('    no saved figure; run without --lines-only')
         return
     rel = (Path('..') / fig_path.relative_to(ROOT)).as_posix()
-    img = f'<img src="{rel}" alt="Preview: {title_of(nb)}" width="{WIDTH}"/>'
+    img = f'<img src="{rel}" alt="Preview: {title_of(nb)}" width="{nb.metadata.get("header_width", WIDTH)}"/>'
     lines = IMG_RE.sub('', nb.cells[0].source).split('\n')
     at = next((k + 1 for k, ln in enumerate(lines) if ln.startswith('stough 20')), None)
     if at is None:   # no byline: after the leading headings and notes
