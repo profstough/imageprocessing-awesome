@@ -253,6 +253,17 @@ def fix_sitemap(html_dir):
         path.write_text(re.sub(r'http://localhost:\d+', site_url, text), encoding='utf-8')
 
 
+def absolute_preview_images(html_dir):
+    """Each page's preview image (og:image, read by Slack, Messages, LinkedIn, ...) comes out
+    as a path within the site; link previews need the full address."""
+    og = re.compile(r'(<meta property="og:image" content=")(/[^"]*")')
+    for page in html_dir.rglob('*.html'):
+        html = page.read_text(encoding='utf-8')
+        fixed = og.sub(lambda m: m[1] + SITE_DOMAIN + m[2], html)
+        if fixed != html:
+            page.write_text(fixed, encoding='utf-8')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--stage', action='store_true', help='only stage _site/, without building')
@@ -263,6 +274,7 @@ def main():
         if result.returncode == 0:
             add_head_tags(SITE / '_build' / 'html' / 'index.html')
             fix_sitemap(SITE / '_build' / 'html')
+            absolute_preview_images(SITE / '_build' / 'html')
         sys.exit(result.returncode)
 
 
