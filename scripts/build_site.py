@@ -46,6 +46,9 @@ SUPPORT = ['dip_pics', 'dip_figs', 'dip_utils', 'dip_outs', 'cc-license.png',
 EXTRA_PAGES = [('README.md', 'About the Repository'),
                ('private_fork_instructions.md', 'Making a Private Fork'),
                ('colab_setup.ipynb', 'Running in Colab')]
+# Added to the home page's <head> after the build; the theme has no option for custom tags.
+# Google Search Console checks this one to verify that we own the site.
+HEAD_TAGS = ['<meta name="google-site-verification" content="ZGLircp48Kj8i7a3afTlN3-K_UGnEjov1ia8QoVELBQ" />']
 
 ITEM_RE = re.compile(r'^( *)1\. (.*?)\s*$')
 LINK_RE = re.compile(r'\[(.*?)\]\((?:\./)?([^)#\s]+\.ipynb)\)')
@@ -208,6 +211,14 @@ def stage():
     print(f'staged {sum(1 for _ in SITE.glob("*/*.ipynb"))} notebooks in {SITE.relative_to(ROOT)}/')
 
 
+def add_head_tags(page):
+    html = page.read_text(encoding='utf-8')
+    if '</head>' not in html:
+        sys.exit(f'no </head> in {page}')
+    tags = ''.join(tag for tag in HEAD_TAGS if tag not in html)
+    page.write_text(html.replace('</head>', tags + '</head>', 1), encoding='utf-8')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--stage', action='store_true', help='only stage _site/, without building')
@@ -215,6 +226,8 @@ def main():
     stage()
     if not args.stage:
         result = subprocess.run(['jupyter-book', 'build', '--html', '--execute'], cwd=SITE, check=False)
+        if result.returncode == 0:
+            add_head_tags(SITE / '_build' / 'html' / 'index.html')
         sys.exit(result.returncode)
 
 
