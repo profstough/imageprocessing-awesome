@@ -275,6 +275,15 @@ The book is published with Jupyter Book 2 (MyST) to GitHub Pages, at https://pro
 - The six new notebooks carry `> **DRAFT, not finalized.**` under their title until you've reviewed them (commits 9491cb5…2270cfb). Remove the line when you approve one.
 - Kept as is, your call: `env_dip26.yml` (the README points to it as the legacy conda option), and `dip_outs/` with its committed outputs.
 
+## Header figures (trial, on `beta`, 2026-10-08)
+
+Your idea: every notebook opens with a "what are we doing here" figure, its processed output rather than just the input picture. On the website, a page's first image is also its preview card (the dotted links in the TOC), so this gives every page a thumbnail.
+
+- `scripts/make_header_figs.py`: tag the code cell that best shows the notebook's result `header`; the script runs the notebook up to that cell and saves its figure to `dip_figs/headers/<notebook>.jpg` (JPEG, about 100–150 KB each), then keeps an `<img width="600">` line under the `stough 202-` line. `header_snapshot` in the cell's metadata adds code before the capture (like `expected_snapshot`). Exercises have nothing to run, so their figure comes from `header_code` in the notebook's metadata and shows the problem, never a result.
+- Trial: enhance_transfer (the underexposed Prague photo and its log correction), edge_detection (noisy camera and Canny edges, with panel titles added via `header_snapshot`), playing_with_enhance (too dark / overexposed / hazy photos; the original "too dark" pick was a Game of Thrones still, swapped for `dark_nature.jpg` so a public preview card doesn't feature it).
+- ⚑19: approve the look (size, placement, exercises showing the problem) before the remaining notebooks get theirs.
+- ⚑20: `dip_figs/eyeball.png` (color_intro) is small (310×262) with tiny labels and of unknown origin; suggest replacing it with a public-domain eye diagram from Wikimedia Commons. Separately, 38 images in 15 notebooks are sized with `style="height:300px"`, which VS Code can ignore; `height="300"` works everywhere.
+
 ## Commit index
 
 Generated with `git log --reverse --format='%h %s' main..book-revision`; see that command for the current list.
