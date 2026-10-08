@@ -25,6 +25,7 @@ Usage:
 """
 
 import argparse
+import os
 import re
 import shutil
 import subprocess
@@ -38,6 +39,7 @@ from static_nb import make_static
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / '_site'
 REPO_URL = 'https://github.com/profstough/imageprocessing-awesome'
+SITE_DOMAIN = 'https://profstough.github.io'   # GitHub Pages; BASE_URL adds the repo's path
 
 # Copied into the staging folder besides the chapter folders.
 SUPPORT = ['dip_pics', 'dip_figs', 'dip_utils', 'dip_outs', 'cc-license.png',
@@ -219,6 +221,17 @@ def add_head_tags(page):
     page.write_text(html.replace('</head>', tags + '</head>', 1), encoding='utf-8')
 
 
+def fix_sitemap(html_dir):
+    """The static export fetches every page from a temporary local server, so the
+    sitemap's links (and robots.txt's pointer to it) come out as localhost:3000.
+    Point them at the published site."""
+    site_url = SITE_DOMAIN + os.environ.get('BASE_URL', '')
+    for name in ('sitemap.xml', 'robots.txt'):
+        path = html_dir / name
+        text = path.read_text(encoding='utf-8')
+        path.write_text(re.sub(r'http://localhost:\d+', site_url, text), encoding='utf-8')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--stage', action='store_true', help='only stage _site/, without building')
@@ -228,6 +241,7 @@ def main():
         result = subprocess.run(['jupyter-book', 'build', '--html', '--execute'], cwd=SITE, check=False)
         if result.returncode == 0:
             add_head_tags(SITE / '_build' / 'html' / 'index.html')
+            fix_sitemap(SITE / '_build' / 'html')
         sys.exit(result.returncode)
 
 
