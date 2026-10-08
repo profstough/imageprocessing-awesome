@@ -56,6 +56,8 @@ ITEM_RE = re.compile(r'^( *)1\. (.*?)\s*$')
 LINK_RE = re.compile(r'\[(.*?)\]\((?:\./)?([^)#\s]+\.ipynb)\)')
 ANCHOR_RE = re.compile(r'''<a id=['"]([\w-]+)['"]>\s*</a>[ \t]*\n(?:[ \t]*\n)*''')
 TARGET_RE = re.compile(r'\]\(([^)\s#]*)#([\w-]+)\)')
+IMG_RE = re.compile(r'<img\b[^>]*>|!\[[^\]]*\]\([^)]*\)')
+COMMENT_RE = re.compile(r'<!--.*?-->', re.DOTALL)
 
 
 # ---------------------------------------------------------------- the TOC
@@ -128,6 +130,17 @@ def write_myst_yml(toc):
 
 # ---------------------------------------------------------------- notebooks
 
+def separate_images(source):
+    """Give each image its own paragraph. The theme shrinks images that share a paragraph
+    to inline slivers, so side-by-side images (fine in Jupyter and VS Code) are stacked."""
+    paras = re.split(r'(\n\s*\n)', source)
+    for k, para in enumerate(paras):
+        imgs = IMG_RE.findall(para)
+        if len(imgs) > 1 and not IMG_RE.sub('', COMMENT_RE.sub('', para)).strip():
+            paras[k] = '\n\n'.join(imgs)
+    return ''.join(paras)
+
+
 def to_dropdown(source):
     '''Turn an "Expected output" <details> block into a MyST dropdown.'''
     m = re.match(r'<details>\n<summary>(.*?)</summary>\n\n(.*)\n\n</details>\s*$', source, re.DOTALL)
@@ -175,6 +188,7 @@ def stage_notebook(path, label, anchors, execute=True):
             continue
         c.source = ANCHOR_RE.sub(lambda m: f'({path.stem}-{m[1]})=\n', c.source)
         c.source = TARGET_RE.sub(lambda m: retarget(m, path, anchors), c.source)
+        c.source = separate_images(c.source)
         if 'expected-output' in c.get('metadata', {}).get('tags', []):
             c.source = to_dropdown(c.source)
     front = {'short_title': label, **source_links(path)}
