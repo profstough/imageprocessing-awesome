@@ -55,5 +55,8 @@ This repo is an interactive textbook, *Digital Image Processing in Python* (Josh
 
 ## Workflow
 - Clear outputs before committing (`uv run jupyter nbconvert --clear-output --inplace <nb>`), so diffs show source only.
-- Revisions are reviewed notebook by notebook: one commit per notebook, with the message `<Chapter>/<notebook>: <summary>`. Record each change and open questions in `REVISION_REVIEW.md` while a revision branch is active.
+- `main` is the published book: every push to it redeploys the site. Do revision work on a branch and merge it once Josh has reviewed it.
+- Revisions are reviewed notebook by notebook: one commit per notebook, with the message `<Chapter>/<notebook>: <summary>`.
+- The revision log, `REVISION_REVIEW.md` (each change, plus open questions marked ⚑), lives on the `notes` branch, which shares no history with `main` and never merges into it. It's checked out in `_notes/` (gitignored; `git worktree add _notes notes` in a fresh clone). Commit it there.
+- A new notebook carries `> **DRAFT, not finalized.**` under its title until Josh approves it.
 - Flag questionable existing content for Josh instead of deleting it.
