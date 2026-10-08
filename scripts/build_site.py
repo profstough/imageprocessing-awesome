@@ -159,6 +159,12 @@ def retarget(m, path, anchors):
     return m[0]
 
 
+def source_links(path):
+    """Page frontmatter: no "edit" pencil for readers, and the "source" link points at the
+    file in the repository (by default both would point into _site/, which isn't in it)."""
+    return {'edit_url': None, 'source_url': f'{REPO_URL}/blob/main/{path.relative_to(SITE).as_posix()}'}
+
+
 def stage_notebook(path, label, anchors, execute=True):
     nb = nbformat.read(path, as_version=4)
     needs_data = any(t.startswith('expected:') for c in nb.cells for t in c.get('metadata', {}).get('tags', []))
@@ -171,7 +177,7 @@ def stage_notebook(path, label, anchors, execute=True):
         c.source = TARGET_RE.sub(lambda m: retarget(m, path, anchors), c.source)
         if 'expected-output' in c.get('metadata', {}).get('tags', []):
             c.source = to_dropdown(c.source)
-    front = {'short_title': label}
+    front = {'short_title': label, **source_links(path)}
     if needs_data or is_exercise or not execute:
         front['execute'] = {'skip': True}
     front_cell = nbformat.v4.new_markdown_cell('---\n' + yaml.safe_dump(front, allow_unicode=True) + '---')
@@ -207,7 +213,8 @@ def stage():
         if p.suffix == '.ipynb':
             stage_notebook(p, title, anchors, execute=False)
         else:
-            p.write_text(f'---\ntitle: {title}\n---\n\n' + p.read_text())
+            front = yaml.safe_dump({'title': title, **source_links(p)}, allow_unicode=True)
+            p.write_text(f'---\n{front}---\n\n' + p.read_text())
 
     write_myst_yml(myst_toc(items))
     print(f'staged {sum(1 for _ in SITE.glob("*/*.ipynb"))} notebooks in {SITE.relative_to(ROOT)}/')
