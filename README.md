@@ -5,7 +5,7 @@
 
 Imaging is everywhere! In this text, we will cover broadly the acquisition, processing, and analysis of digital images, covering topics ranging from the human visual system, to image and video compression algorithms, to pattern recognition and machine learning within the context of automatic image understanding. Best of all, for the sake of access, immediacy, and usability, all content and code examples are in the form of interactive Jupyterlab notebooks, including integrated activities!
 
-*Written with extensive assistance of Claude in drafting narrative and copyediting, based on the draft notebook collection at [joshuastough/imageprocessing](https://github.com/joshuastough/imageprocessing).*
+*Written with extensive assistance of Claude in drafting narrative and copyediting, and backend book production, based on the draft notebook collection at [joshuastough/imageprocessing](https://github.com/joshuastough/imageprocessing).*
 
 ### A note on AI
 With the advent of IDE-integrated LLM copilots, any of the integrated activities or playpen notebooks are trivial to complete. That is, your completion of them reflect almost nothing about *your* understanding of the material. If you're in class using this textbook resource, you can be expected to have to explain your work in non-augmented coding interviews throughout the course, which will comprise much of your grade. **These integrated activities are to help guide your learning, not add to your instructor's menial labor.**
