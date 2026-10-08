@@ -17,11 +17,11 @@ This repo is an interactive textbook, *Digital Image Processing in Python* (Josh
   - `wavelet_utils.py`: Haar/DCT/standard/random/KLT basis matrices
   - `huff_utils.py`, `huffnode.py`: Huffman coding
   - `data_paths.py`: dataset locations
-- `dip_pics/`: input images. `dip_figs/`: explanatory figures (`dip_figs/expected/`: generated expected outputs, see below). `dip_outs/`: generated outputs.
+- `dip_pics/`: input images. `dip_figs/`: explanatory figures (`dip_figs/expected/`: generated expected outputs; `dip_figs/headers/`: generated header figures; see below). `dip_outs/`: generated outputs.
 - Datasets (MNIST, ORL, Yale) live outside the repo under `$DIP_DATA` (default `~/data`). Notebooks must get their paths from `dip_utils/data_paths.py`, never from hardcoded absolute paths.
 
 ## Notebook conventions (match these when editing or writing)
-- The first cell is markdown: `# Title`, then an optional `## Subtitle`, then `stough 202-`, then a numbered list of anchor links to the sections (`<a id='name'></a>` placed before each section header).
+- The first cell is markdown: `# Title`, then an optional `## Subtitle`, then `stough 202-`, then the header figure (an `<img>` line maintained by `make_header_figs.py`, see below), then a numbered list of anchor links to the sections (`<a id='name'></a>` placed before each section header).
 - Imports cell:
   ```python
   %matplotlib widget
@@ -51,6 +51,7 @@ This repo is an interactive textbook, *Digital Image Processing in Python* (Josh
 - Book check: `uv run python scripts/check_book.py`. It cross-checks TOC links against notebook files and executes notebooks headless. Use `--no-exec` for links only, or pass notebook paths to run a subset.
 - Website: `uv run python scripts/build_site.py` stages the book in `_site/` (generating `myst.yml` from `TOC.ipynb`, static figures, dataset/GPU notebooks and exercises not executed) and builds it with Jupyter Book 2 into `_site/_build/html`. Needs Node.js >= 20. `.github/workflows/publish-book.yml` does the same on every push to `main` and deploys to GitHub Pages. Never edit `_site/`; change the notebooks or the script.
 - Expected outputs: in notebooks that need a dataset or GPU, key cells carry the tag `expected:<name>`. `uv run python scripts/make_expected_figs.py [notebook ...]` runs them with the data, saves those cells' figures (or printed text) to `dip_figs/expected/<notebook>/`, and maintains the collapsed "Expected output" markdown cell (tag `expected-output`) after each one. Don't edit those markdown cells by hand; re-run the script after changing a tagged cell or anything before it. `--blocks-only` rebuilds the cells without executing.
+- Header figures: every notebook opens with a figure of what it does (a processed result, not just the input picture); on the website it is also the page's preview card. Tag the code cell that best shows it `header`; `uv run python scripts/make_header_figs.py [notebook ...]` runs the notebook up to that cell, saves its figure to `dip_figs/headers/<notebook>.jpg`, and keeps the `<img>` line under `stough 202-`. Code in the cell's `header_snapshot` metadata runs before the capture (move a slider, zoom in, add titles, or `header_fig = <figure>` to choose the figure); `header_width` in the notebook metadata shrinks square figures. Exercises use `header_code` in the notebook metadata instead, and their header shows the problem or the givens, never a result. Re-run the script after changing the tagged cell or anything before it; the GPU/dataset notebooks one at a time.
 - Review notebook diffs with `uv run nbdiff-web main -- <notebook>`.
 
 ## Workflow
