@@ -293,6 +293,15 @@ Your report: the eye diagram in color_intro and figures in color_YCbCr were tiny
 - color_YCbCr's CbCr-plane image was hotlinked from Wikimedia, which refuses the build's download, so it was broken on the live site (`build/undefined`). It's public domain (Simon A. Eugster), now a local copy, `dip_figs/ycbcr_cbcr_plane.png`, with the source in a comment. Our 3D cube figure is trimmed and shown at 300px.
 - ⚑21 (your call: replace): `scripts/make_colorspace_figures.py` (renamed from make_ycbcr_cube_figure.py) now also draws `dip_figs/rgb_cube.png` (the cube as colored blocks with red/green/blue axes; replaces the Pinterest cube in color_YCbCr and color_Lab) and `dip_figs/lab_gamut.png` (the RGB cube's surface in L*a*b* coordinates, matching the YCbCr figure; replaces the colorapplications.com figure in color_Lab). The old URLs are kept in HTML comments. The YCbCr cube's Y label had been clipped by the tighter crop; padded.
 
+## Author link and page titles (on `beta`, 2026-10-09)
+
+Your request: your name should link to https://profstough.github.io/, and a shared link previewed as "Digital Image Processing in Python - Digital Image Processing in Py…".
+
+- The TOC byline, the README byline (also the site's "About the Repository" page), and the author entry in the generated `myst.yml` (the box under the home page's title) now link to https://profstough.github.io/ instead of joshuastough.com.
+- The theme writes each page's title as "<page> - <site title>", and the site title had been the book's title. `myst.yml` now sets `site.title: imageprocessing-awesome`, so the home page reads "Digital Image Processing in Python - imageprocessing-awesome" in the browser tab and link previews. The project title (the sidebar's home link) and `logo_text` (the header) stay "Digital Image Processing in Python"; changing the project title instead would have renamed the sidebar link too.
+- Search Console unaffected: same google-site-verification tag, same 70 sitemap URLs, same robots.txt (compared against the live site).
+- Local builds: Node 22 is now in `~/.local/opt/node22`, on PATH through `~/.bashrc` (the system node, 18, can't build the site).
+
 ## Commit index
 
 Generated with `git log --reverse --format='%h %s' main..book-revision`; see that command for the current list.
