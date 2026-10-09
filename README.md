@@ -1,5 +1,5 @@
 ## imageprocessing
-### [Joshua Stough](http://joshuastough.com), 202- (last update Spring 2026)
+### [Joshua Stough](https://profstough.github.io/), 202- (last update Spring 2026)
 
 **Read it online:** [profstough.github.io/imageprocessing-awesome](https://profstough.github.io/imageprocessing-awesome/). To run and change the notebooks, set up a local copy as described below.
 

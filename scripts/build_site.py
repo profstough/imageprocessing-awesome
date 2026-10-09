@@ -113,13 +113,16 @@ def write_myst_yml(toc):
         'version': 1,
         'project': {
             'title': 'Digital Image Processing in Python',
-            'authors': [{'name': 'Joshua Stough', 'url': 'http://joshuastough.com/'}],
+            'authors': [{'name': 'Joshua Stough', 'url': 'https://profstough.github.io/'}],
             'license': 'CC-BY-SA-4.0',
             'github': REPO_URL,
             'toc': toc,
             'settings': {'output_matplotlib_strings': 'remove'},
         },
         'site': {
+            # Follows each page's title in the browser tab and link previews; with the project
+            # title it read "Digital Image Processing in Python - Digital Image Processing in Python".
+            'title': 'imageprocessing-awesome',
             'template': 'book-theme',
             'options': {'logo_text': 'Digital Image Processing in Python'},
         },
