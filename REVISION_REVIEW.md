@@ -302,6 +302,17 @@ Your request: your name should link to https://profstough.github.io/, and a shar
 - Search Console unaffected: same google-site-verification tag, same 70 sitemap URLs, same robots.txt (compared against the live site).
 - Local builds: Node 22 is now in `~/.local/opt/node22`, on PATH through `~/.bashrc` (the system node, 18, can't build the site).
 
+## Visual home page (on `beta`, 2026-10-10)
+
+Your request: the front page was mostly text, its pictures only in hover previews (janky on a phone); get to the notebook pictures sooner.
+
+- Topics: `build_site.py` (`topics_gallery`) turns the Topics list into a gallery per chapter on the site, each notebook as its header figure with its title, linking to it; kinds (demo / 🔨 exercise / extra) show as a small label. Groups with only subpages become subheadings; "coming soon" and "see ... under ..." notes stay as text. Styled by the new `scripts/site.css` (the theme's `style` option). TOC.ipynb's list is unchanged and still drives the sidebar.
+  - Two looks tried: justified rows with whole figures (0ee9173), then a grid of equal cards cropped to 2:1 like the hover previews (d7a4bfb, current). `git revert d7a4bfb` goes back to the first.
+- Front matter: Preface, A note on AI, and Using this Book are folded on the site into cards showing their first paragraph (three lines, "…", Read more); the one-paragraph AI note splits after its second sentence (`preview_card`). The notebook reads straight through as before.
+- TOC.ipynb: tagline *An interactive Jupyter book for digital image processing.* under the byline.
+- Home page only: the byline is plain bold text (not a heading in the outline), the theme's author popover is hidden (`hide_authors`; the byline links to profstough.github.io in one click), and the outline, which the theme opens above the text on phones, is hidden below 1024px (the ☰ menu has the contents; desktop keeps the right rail).
+- Checked in local builds with screenshots at desktop and phone widths, dark mode, and the cards opened.
+
 ## Commit index
 
 Generated with `git log --reverse --format='%h %s' main..book-revision`; see that command for the current list.
