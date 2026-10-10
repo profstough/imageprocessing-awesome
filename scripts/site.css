@@ -67,3 +67,42 @@
   }
   .toc-gallery strong { font-size: 0.78rem; }
 }
+
+/* The home page's front matter, folded (preview_card): the dropdown's title is the section's
+   first paragraph, read as ordinary text and cut to a few lines until opened. */
+.front-preview > summary {
+  padding: 0.6rem 0.5rem 0.6rem 1rem;
+  background: none;   /* one card: the preview reads on into the rest */
+}
+.front-preview .myst-dropdown-header-title {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.75;
+}
+.front-preview:not([open]) .myst-dropdown-header-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+.front-preview:not([open]) > summary::after {
+  content: 'Read more';
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-blue-700, #1d4ed8);
+}
+.front-preview > .myst-dropdown-body {
+  padding: 0.25rem 1rem 0.5rem;
+}
+
+/* On a phone the theme puts the page outline, open, above the home page's text; there the
+   menu already holds the contents, so it only delays the gallery. (Wider screens keep it in
+   the margin.) */
+@media (max-width: 1023px) {
+  article:has(.toc-gallery) div:has(> .myst-outline-section) {
+    display: none;
+  }
+}

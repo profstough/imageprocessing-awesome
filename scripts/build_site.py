@@ -9,7 +9,8 @@ The notebooks in the repository are never modified.
 - myst.yml is generated from TOC.ipynb, so the site's navigation always matches
   the book's table of contents, labels included ("🔨 exercise: ...").
 - On the home page, the Topics list becomes galleries of the notebooks' header
-  figures (topics_gallery, styled by site.css).
+  figures (topics_gallery, styled by site.css), and the front matter before it
+  is folded into previews (preview_card).
 - Figures are drawn inline, in their starting state (see static_nb.py). Sliders
   can't respond on a static page; readers run the notebooks for that.
 - Notebooks that need a dataset or a GPU (those with `expected:` cells) and the
@@ -50,6 +51,8 @@ SUPPORT = ['dip_pics', 'dip_figs', 'dip_utils', 'dip_outs', 'cc-license.png',
 EXTRA_PAGES = [('README.md', 'About the Repository'),
                ('private_fork_instructions.md', 'Making a Private Fork'),
                ('colab_setup.ipynb', 'Running in Colab')]
+# Home page sections shown folded, as a preview of their first paragraph.
+FRONT_PREVIEWS = ['Preface', 'Using this Book']
 # Added to the home page's <head> after the build; the theme has no option for custom tags.
 # Google Search Console checks this one to verify that we own the site.
 HEAD_TAGS = ['<meta name="google-site-verification" content="ZGLircp48Kj8i7a3afTlN3-K_UGnEjov1ia8QoVELBQ" />']
@@ -108,6 +111,27 @@ def myst_toc(items):
 
     return [{'file': 'TOC.ipynb'}, *prune(root['children']),
             {'title': 'About', 'children': [{'file': f} for f, _ in EXTRA_PAGES]}]
+
+
+def preview_card(source):
+    """Fold a front-matter section (FRONT_PREVIEWS), and each of its subsections, into dropdowns
+    whose title is the first paragraph, shown as a few lines (site.css), so the Topics gallery
+    comes sooner. A one-paragraph section is split after its second sentence. Folded, the
+    sections don't need the &nbsp; spacer above them."""
+    heads = '|'.join(FRONT_PREVIEWS)
+    if not re.match(rf'&nbsp;\n# (?:{heads})\n', source):
+        return source
+    out = []
+    for part in re.split(r'\n(?=#+ )', source.removeprefix('&nbsp;\n').strip()):
+        head, _, body = part.partition('\n')
+        first, _, rest = body.strip().partition('\n\n')
+        first = ' '.join(first.split())
+        if not rest:
+            sentences = re.split(r'(?<=[.!?])\s+', first)
+            first, rest = ' '.join(sentences[:2]), ' '.join(sentences[2:])
+        out.append(f'{head}\n\n:::{{dropdown}} {first}\n:class: front-preview\n\n{rest}\n:::'
+                   if rest else part)
+    return '\n\n'.join(out)
 
 
 def topics_gallery(items):
@@ -234,7 +258,7 @@ def source_links(path):
     return {'edit_url': None, 'source_url': f'{REPO_URL}/blob/main/{path.relative_to(SITE).as_posix()}'}
 
 
-def stage_notebook(path, label, anchors, execute=True):
+def stage_notebook(path, label, anchors, execute=True, site=None):
     nb = nbformat.read(path, as_version=4)
     needs_data = any(t.startswith('expected:') for c in nb.cells for t in c.get('metadata', {}).get('tags', []))
     is_exercise = path.name.startswith(('play_', 'playing_with_'))
@@ -248,6 +272,8 @@ def stage_notebook(path, label, anchors, execute=True):
         if 'expected-output' in c.get('metadata', {}).get('tags', []):
             c.source = to_dropdown(c.source)
     front = {'short_title': label, **source_links(path)}
+    if site:
+        front['site'] = site
     if needs_data or is_exercise or not execute:
         front['execute'] = {'skip': True}
     front_cell = nbformat.v4.new_markdown_cell('---\n' + yaml.safe_dump(front, allow_unicode=True) + '---')
@@ -274,6 +300,10 @@ def stage():
     toc = nbformat.read(ROOT / 'TOC.ipynb', as_version=4)
     topics = next(c for c in toc.cells if c.cell_type == 'markdown' and '# Topics' in c.source)
     topics.source = topics.source[:topics.source.index('\n1. ')] + '\n\n' + topics_gallery(items)
+    for c in toc.cells:
+        c.source = preview_card(c.source)
+    # The byline is a heading in the notebook; on the site it would head the page outline.
+    toc.cells[0].source = re.sub(r'^### (.*)$', r'**\1**', toc.cells[0].source, count=1, flags=re.MULTILINE)
     nbformat.write(toc, SITE / 'TOC.ipynb')
 
     files = [f for _, _, f in items if f]
@@ -281,7 +311,9 @@ def stage():
     for _, label, file in items:
         if file:
             stage_notebook(SITE / file, label, anchors)
-    stage_notebook(SITE / 'TOC.ipynb', 'Contents', anchors)
+    # The byline in TOC.ipynb links straight to the author's site; the theme's author line,
+    # a popover, would repeat it.
+    stage_notebook(SITE / 'TOC.ipynb', 'Contents', anchors, site={'hide_authors': True})
     for file, title in EXTRA_PAGES:
         p = SITE / file
         if p.suffix == '.ipynb':
