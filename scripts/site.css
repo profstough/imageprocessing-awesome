@@ -1,21 +1,15 @@
 /* Added to every page of the website (build_site.py). */
 
 /* The home page's Topics: galleries of header figures, each linking to its notebook
-   (topics_gallery). Rows of equal height, filled edge to edge: each figure starts at its
-   natural width and grows with the rest of its row, so wide strips stay wide. */
+   (topics_gallery). A grid of equal cards; each figure is cropped to a centered 2:1
+   window, as in the theme's hover previews. */
 .toc-gallery > p {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
   gap: 0.75rem;
 }
-.toc-gallery > p::after {
-  content: '';
-  flex-grow: 1000;   /* keeps a short last row from stretching its few figures */
-}
 .toc-gallery > p > span {   /* the theme's wrapper for a link's hover preview */
-  flex: 1 1 auto;
   display: flex;
-  max-width: 100%;
 }
 .toc-gallery a {
   flex: 1;
@@ -39,17 +33,13 @@
 .toc-gallery img {
   display: block;
   width: 100%;
-  height: 8.5rem;
+  aspect-ratio: 2;
   margin: 0;
-  object-fit: contain;   /* nothing cropped; the figures' white background pads them */
+  object-fit: cover;
   background: white;
 }
-/* The caption takes the figure's width rather than setting it. */
 .toc-gallery em,
 .toc-gallery strong {
-  width: 0;
-  min-width: 100%;
-  box-sizing: border-box;
   padding: 0 0.5rem;
   overflow-wrap: normal;
   hyphens: auto;
@@ -71,7 +61,9 @@
   opacity: 0.7;
 }
 @media (max-width: 640px) {
-  .toc-gallery > p { gap: 0.5rem; }
-  .toc-gallery img { height: 5.5rem; }
+  .toc-gallery > p {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+  }
   .toc-gallery strong { font-size: 0.78rem; }
 }
