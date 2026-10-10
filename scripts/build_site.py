@@ -8,6 +8,8 @@ The notebooks in the repository are never modified.
 
 - myst.yml is generated from TOC.ipynb, so the site's navigation always matches
   the book's table of contents, labels included ("🔨 exercise: ...").
+- On the home page, the Topics list becomes galleries of the notebooks' header
+  figures (topics_gallery, styled by site.css).
 - Figures are drawn inline, in their starting state (see static_nb.py). Sliders
   can't respond on a static page; readers run the notebooks for that.
 - Notebooks that need a dataset or a GPU (those with `expected:` cells) and the
@@ -108,6 +110,57 @@ def myst_toc(items):
             {'title': 'About', 'children': [{'file': f} for f, _ in EXTRA_PAGES]}]
 
 
+def topics_gallery(items):
+    """The home page's Topics list as galleries of header figures, one per chapter, each figure
+    linking to its notebook (styled by site.css). On a phone there is no hover to show the
+    previews, and an image processing book should open with images.
+
+    Unlinked items are groups (a heading, when a chapter has only groups; otherwise their
+    pages simply join the chapter's gallery) or notes ("coming soon", "see ... under ...")."""
+    root = {'children': []}
+    stack = [(-1, root)]
+    for level, label, file in items:
+        while stack[-1][0] >= level:
+            stack.pop()
+        node = {'label': label, 'file': file, 'children': []}
+        stack[-1][1]['children'].append(node)
+        stack.append((level, node))
+
+    def cards(nodes):
+        out, notes = [], []
+        for n in nodes:
+            if n['file']:
+                kind, title = re.match(r'(?:(🔨 exercise|demo|extra): )?(.*)', n['label']).groups()
+                title = title.replace('*', r'\*')   # L*a*b*
+                stem = Path(n['file']).stem
+                out.append(f'[![](dip_figs/headers/{stem}.jpg){f"*{kind}* " if kind else ""}'
+                           f'**{title}**](./{n["file"]})')
+            elif not n['children']:
+                notes.append(n['label'])
+            sub_out, sub_notes = cards(n['children'])
+            out += sub_out
+            notes += sub_notes
+        return out, notes
+
+    def gallery(nodes):
+        out, notes = cards(nodes)
+        block = [':::{div}', ':class: toc-gallery', *out, ':::', ''] if out else []
+        return block + [f'{note}\n' for note in notes]
+
+    lines = []
+    for k, chapter in enumerate(root['children'], 1):
+        lines.append(f'## {k}. {chapter["label"]}\n')
+        if any(n['file'] for n in chapter['children']):
+            lines += gallery(chapter['children'])
+            continue
+        for n in chapter['children']:
+            if n['children']:
+                lines += [f'### {n["label"]}\n', *gallery(n['children'])]
+            else:
+                lines.append(f'{n["label"]}\n')
+    return '\n'.join(lines)
+
+
 def write_myst_yml(toc):
     config = {
         'version': 1,
@@ -124,7 +177,7 @@ def write_myst_yml(toc):
             # title it read "Digital Image Processing in Python - Digital Image Processing in Python".
             'title': 'imageprocessing-awesome',
             'template': 'book-theme',
-            'options': {'logo_text': 'Digital Image Processing in Python'},
+            'options': {'logo_text': 'Digital Image Processing in Python', 'style': 'site.css'},
         },
     }
     with open(SITE / 'myst.yml', 'w') as f:
@@ -217,7 +270,11 @@ def stage():
             shutil.copytree(src, SITE / name, ignore=ignore)
         else:
             shutil.copy2(src, SITE / name)
-    shutil.copy2(ROOT / 'TOC.ipynb', SITE / 'TOC.ipynb')
+    shutil.copy2(ROOT / 'scripts' / 'site.css', SITE / 'site.css')
+    toc = nbformat.read(ROOT / 'TOC.ipynb', as_version=4)
+    topics = next(c for c in toc.cells if c.cell_type == 'markdown' and '# Topics' in c.source)
+    topics.source = topics.source[:topics.source.index('\n1. ')] + '\n\n' + topics_gallery(items)
+    nbformat.write(toc, SITE / 'TOC.ipynb')
 
     files = [f for _, _, f in items if f]
     anchors = anchors_by_notebook([*files, 'TOC.ipynb'])

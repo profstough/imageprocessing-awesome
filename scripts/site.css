@@ -1,0 +1,77 @@
+/* Added to every page of the website (build_site.py). */
+
+/* The home page's Topics: galleries of header figures, each linking to its notebook
+   (topics_gallery). Rows of equal height, filled edge to edge: each figure starts at its
+   natural width and grows with the rest of its row, so wide strips stay wide. */
+.toc-gallery > p {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.toc-gallery > p::after {
+  content: '';
+  flex-grow: 1000;   /* keeps a short last row from stretching its few figures */
+}
+.toc-gallery > p > span {   /* the theme's wrapper for a link's hover preview */
+  flex: 1 1 auto;
+  display: flex;
+  max-width: 100%;
+}
+.toc-gallery a {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgb(128 128 128 / 0.3);
+  border-radius: 0.4rem;
+  color: inherit;
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.toc-gallery a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.18);
+}
+.toc-gallery picture {
+  display: block;
+  margin: 0;
+}
+.toc-gallery img {
+  display: block;
+  width: 100%;
+  height: 8.5rem;
+  margin: 0;
+  object-fit: contain;   /* nothing cropped; the figures' white background pads them */
+  background: white;
+}
+/* The caption takes the figure's width rather than setting it. */
+.toc-gallery em,
+.toc-gallery strong {
+  width: 0;
+  min-width: 100%;
+  box-sizing: border-box;
+  padding: 0 0.5rem;
+  overflow-wrap: normal;
+  hyphens: auto;
+}
+.toc-gallery strong {
+  padding-top: 0.35rem;
+  padding-bottom: 0.45rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.toc-gallery em {
+  padding-top: 0.35rem;
+  margin-bottom: -0.35rem;
+  font-size: 0.7rem;
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+}
+@media (max-width: 640px) {
+  .toc-gallery > p { gap: 0.5rem; }
+  .toc-gallery img { height: 5.5rem; }
+  .toc-gallery strong { font-size: 0.78rem; }
+}
