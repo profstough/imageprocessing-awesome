@@ -337,12 +337,16 @@ def add_head_tags(page):
 def fix_sitemap(html_dir):
     """The static export fetches every page from a temporary local server, so the
     sitemap's links (and robots.txt's pointer to it) come out as localhost:3000.
-    Point them at the published site."""
+    Point them at the published site. Each page is a folder (numpy-tutorial/index.html),
+    and GitHub Pages redirects numpy-tutorial to numpy-tutorial/, so the sitemap lists
+    the address with the slash, the one Google should index."""
     site_url = SITE_DOMAIN + os.environ.get('BASE_URL', '')
     for name in ('sitemap.xml', 'robots.txt'):
         path = html_dir / name
-        text = path.read_text(encoding='utf-8')
-        path.write_text(re.sub(r'http://localhost:\d+', site_url, text), encoding='utf-8')
+        text = re.sub(r'http://localhost:\d+', site_url, path.read_text(encoding='utf-8'))
+        if name == 'sitemap.xml':
+            text = re.sub(r'<loc>([^<]*?)/?</loc>', r'<loc>\1/</loc>', text)
+        path.write_text(text, encoding='utf-8')
 
 
 def absolute_preview_images(html_dir):
